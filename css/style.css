@@ -563,10 +563,28 @@ body {
   border-radius: 30px;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.author-badge:hover {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2) 0%, rgba(0, 255, 136, 0.2) 100%);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0, 217, 255, 0.2);
 }
 
 .author-badge strong {
   color: var(--accent-primary);
+}
+
+a.hero-badge {
+  text-decoration: none;
+}
+
+a.hero-badge:hover {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.3) 0%, rgba(0, 255, 136, 0.3) 100%);
+  transform: translateY(-2px);
 }
 
 /* ============================================

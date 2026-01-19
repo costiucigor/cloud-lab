@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision Pipeline Demo | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .demo-container {
+      padding: 120px 60px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .demo-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    
+    .demo-header p {
+      color: var(--text-secondary);
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    
+    @media (max-width: 900px) {
+      .demo-grid { grid-template-columns: 1fr; }
+      .demo-container { padding: 100px 20px 40px; }
+    }
+    
+    .demo-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+    }
+    
+    .demo-panel h2 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: var(--accent-primary);
+    }
+    
+    .upload-area {
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 15px;
+      padding: 50px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+    }
+    
+    .upload-area:hover {
+      border-color: var(--accent-primary);
+      background: rgba(0,217,255,0.05);
+    }
+    
+    .upload-area.dragover {
+      border-color: var(--accent-secondary);
+      background: rgba(0,255,136,0.05);
+    }
+    
+    .upload-icon { font-size: 3rem; margin-bottom: 15px; }
+    
+    #preview {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 10px;
+      display: none;
+      margin: 15px auto;
+    }
+    
+    .btn-process {
+      width: 100%;
+      padding: 15px;
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-process:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,217,255,0.3);
+    }
+    
+    .btn-process:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .result-group {
+      margin-bottom: 25px;
+    }
+    
+    .result-group h3 {
+      font-size: 1rem;
+      color: var(--accent-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 15px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin: 6px 0;
+      font-size: 0.9rem;
+    }
+    
+    .result-item .en { color: #fff; }
+    .result-item .ro { color: var(--accent-primary); }
+    
+    .audio-section {
+      background: rgba(0,217,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .audio-section h3 {
+      color: var(--accent-primary);
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    
+    audio { width: 100%; margin-bottom: 10px; }
+    
+    .download-audio {
+      display: inline-block;
+      background: var(--gradient-secondary);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 30px;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top: 4px solid var(--accent-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .no-results {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px;
+    }
+    
+    .hidden { display: none !important; }
+    
+    input[type="file"] { display: none; }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-bottom: 30px;
+      transition: color 0.3s;
+    }
+    
+    .back-link:hover { color: var(--accent-primary); }
+    
+    .demo-note {
+      background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .demo-note strong { color: var(--accent-tertiary); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="demo-container">
+    <a href="../index.html#demos" class="back-link">← Back to Demos</a>
+    
+    <div class="demo-header">
+      <h1>🔬 Vision Pipeline Demo</h1>
+      <p>Upload an image to detect objects, translate to Romanian, and generate audio</p>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Left: Upload -->
+      <div class="demo-panel">
+        <h2>📤 Upload Image</h2>
+        
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">🖼️</div>
+          <p>Click or drag & drop<br><small style="color: var(--text-muted);">JPG or PNG</small></p>
+        </div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png">
+        
+        <div id="previewContainer" class="hidden">
+          <img id="preview" alt="Preview">
+          <button class="btn-process" id="processBtn">🚀 Process Image</button>
+        </div>
+        
+        <div class="loading hidden" id="loading">
+          <div class="spinner"></div>
+          <p>Processing with Google Cloud AI...</p>
+        </div>
+        
+        <div class="demo-note">
+          <strong>⚠️ Note:</strong> This is a frontend demo. To fully work, you need to run the backend server with your GCP credentials. See Module 5 & 7 for setup instructions.
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="demo-panel">
+        <h2>📊 Results</h2>
+        
+        <div id="results" class="hidden">
+          <div class="result-group">
+            <h3>🏷️ Labels Detected</h3>
+            <div id="labelsList"></div>
+          </div>
+          
+          <div class="result-group">
+            <h3>🌐 Translations (EN → RO)</h3>
+            <div id="translationsList"></div>
+          </div>
+          
+          <div class="audio-section" id="audioSection">
+            <h3>🔊 Audio (Romanian)</h3>
+            <audio id="audioPlayer" controls></audio>
+            <br>
+            <a id="downloadLink" class="download-audio" download="detection.mp3">⬇️ Download MP3</a>
+          </div>
+        </div>
+        
+        <div id="noResults" class="no-results">
+          <p style="font-size: 2.5rem; margin-bottom: 10px;">👆</p>
+          <p>Upload an image to see results</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const previewContainer = document.getElementById('previewContainer');
+    const processBtn = document.getElementById('processBtn');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const noResults = document.getElementById('noResults');
+    
+    let selectedFile = null;
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+        handleFile(file);
+      }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleFile(e.target.files[0]);
+    });
+    
+    function handleFile(file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        previewContainer.classList.remove('hidden');
+        uploadArea.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+      results.classList.add('hidden');
+      noResults.style.display = 'block';
+    }
+    
+    processBtn.addEventListener('click', () => {
+      // Simulate processing (in real app, this would call the backend)
+      loading.classList.remove('hidden');
+      previewContainer.classList.add('hidden');
+      
+      setTimeout(() => {
+        loading.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+        
+        // Simulated results
+        displayResults({
+          labels: [
+            { name: 'Computer', score: '95.2' },
+            { name: 'Technology', score: '89.1' },
+            { name: 'Electronics', score: '85.7' },
+            { name: 'Screen', score: '82.3' }
+          ],
+          translations: [
+            { english: 'Computer', romanian: 'Calculator' },
+            { english: 'Electronics', romanian: 'Electronică' },
+            { english: 'Screen', romanian: 'Ecran' },
+            { english: 'Technology', romanian: 'Tehnologie' }
+          ]
+        });
+      }, 2000);
+    });
+    
+    function displayResults(data) {
+      noResults.style.display = 'none';
+      results.classList.remove('hidden');
+      
+      const labelsList = document.getElementById('labelsList');
+      labelsList.innerHTML = data.labels.map(l => `
+        <div class="result-item">
+          <span class="en">${l.name}</span>
+          <span style="color: var(--text-muted);">${l.score}%</span>
+        </div>
+      `).join('');
+      
+      const translationsList = document.getElementById('translationsList');
+      translationsList.innerHTML = data.translations.map(t => `
+        <div class="result-item">
+          <span class="en">${t.english}</span>
+          <span class="ro">${t.romanian}</span>
+        </div>
+      `).join('');
+      
+      // Hide audio section in demo mode (no real audio)
+      document.getElementById('audioSection').innerHTML = `
+        <h3>🔊 Audio (Romanian)</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Audio generation requires backend server with GCP credentials.
+        </p>
+      `;
+    }
+  </script>
+</body>
+</html>

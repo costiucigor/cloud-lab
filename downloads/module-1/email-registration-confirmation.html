@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #1a1a2e;
+    }
+    .container {
+      background: linear-gradient(145deg, #16213e 0%, #0f3460 100%);
+      padding: 40px;
+      border-radius: 15px;
+      color: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #00d9ff;
+      margin: 0 0 10px 0;
+      font-size: 24px;
+    }
+    .success-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #00d9ff 0%, #00ff88 100%);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .content {
+      line-height: 1.8;
+    }
+    .sections-list {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+    .sections-list h3 {
+      color: #00d9ff;
+      margin: 0 0 15px 0;
+    }
+    .section-tag {
+      display: inline-block;
+      background: rgba(0,217,255,0.2);
+      border: 1px solid rgba(0,217,255,0.5);
+      color: #00d9ff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      margin: 5px;
+      font-size: 13px;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>☁️ Cloud Technologies Conference</h1>
+      <span class="success-badge">✓ Registration Confirmed</span>
+    </div>
+    
+    <div class="content">
+      <p>Hello <strong><?= name ?></strong>,</p>
+      
+      <p>Your email registration has been successfully processed. We're excited to have you join us!</p>
+      
+      <div class="sections-list">
+        <h3>📚 Your Sessions:</h3>
+        <? for (var i = 0; i < sections.length; i++) { ?>
+          <span class="section-tag"><?= sections[i] ?></span>
+        <? } ?>
+      </div>
+      
+      <p>You will receive additional details about the conference schedule and venue closer to the event date.</p>
+      
+      <p>See you there! 🚀</p>
+    </div>
+    
+    <div class="footer">
+      <p>Cloud Technologies Conference 2026</p>
+      <p>This confirmation was automatically generated from your email registration.</p>
+    </div>
+  </div>
+</body>
+</html>

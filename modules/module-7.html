@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 7 - Load Balancing | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 07</div>
+      <h1>⚖️ Load Balancing</h1>
+      <p>HTTP Load Balancer, Instance Groups, Autoscaling, Health Checks</p>
+    </div>
+
+    <div class="module-content">
+      <section class="content-section">
+        <h2>Architecture</h2>
+        <div style="background: var(--bg-card); border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+          <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+              <div style="font-size: 2.5rem;">🌐</div>
+              <div style="font-weight: 600;">Users</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--accent-primary);">→</div>
+            <div style="text-align: center; background: rgba(0,217,255,0.1); padding: 20px; border-radius: 10px;">
+              <div style="font-size: 2.5rem;">⚖️</div>
+              <div style="font-weight: 600;">Load Balancer</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Global HTTP(S)</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--accent-primary);">→</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="text-align: center; background: rgba(0,255,136,0.1); padding: 15px; border-radius: 8px;">
+                <span style="font-size: 1.5rem;">🖥️</span> VM-1
+              </div>
+              <div style="text-align: center; background: rgba(0,255,136,0.1); padding: 15px; border-radius: 8px;">
+                <span style="font-size: 1.5rem;">🖥️</span> VM-2
+              </div>
+              <div style="text-align: center; background: rgba(0,255,136,0.1); padding: 15px; border-radius: 8px;">
+                <span style="font-size: 1.5rem;">🖥️</span> VM-N
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+            Managed Instance Group with Autoscaling
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Components</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">📋</span>
+            <h4>Instance Template</h4>
+            <p>Blueprint for creating identical VMs</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">👥</span>
+            <h4>Instance Group</h4>
+            <p>Managed group of VMs from template</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">❤️</span>
+            <h4>Health Check</h4>
+            <p>Monitor VM health, auto-replace unhealthy</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📈</span>
+            <h4>Autoscaling</h4>
+            <p>Scale based on CPU, requests, or custom</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Complete Setup Script</h2>
+        
+        <div class="command-section">
+          <h4>1. Create Base VM</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances create web-server-base \
+  --zone=us-central1-a \
+  --machine-type=e2-small \
+  --image-family=debian-12 \
+  --image-project=debian-cloud \
+  --tags=http-server
+
+# SSH and install Node.js app, then stop VM</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>2. Create Machine Image</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute images create web-server-image \
+  --source-disk=web-server-base \
+  --source-disk-zone=us-central1-a</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>3. Create Instance Template</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instance-templates create web-server-template \
+  --machine-type=e2-small \
+  --image=web-server-image \
+  --tags=http-server,allow-health-check</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>4. Create Managed Instance Group</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instance-groups managed create web-server-group \
+  --zone=us-central1-a \
+  --template=web-server-template \
+  --size=2
+
+# Set named port
+gcloud compute instance-groups managed set-named-ports web-server-group \
+  --zone=us-central1-a \
+  --named-ports=http:80
+
+# Enable autoscaling
+gcloud compute instance-groups managed set-autoscaling web-server-group \
+  --zone=us-central1-a \
+  --min-num-replicas=2 \
+  --max-num-replicas=4 \
+  --target-cpu-utilization=0.6</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>5. Create Firewall Rules</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Allow HTTP
+gcloud compute firewall-rules create allow-http \
+  --allow=tcp:80 \
+  --target-tags=http-server
+
+# Allow Health Checks (Google's IP ranges)
+gcloud compute firewall-rules create allow-health-check \
+  --allow=tcp:80 \
+  --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+  --target-tags=allow-health-check</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>6. Create Load Balancer</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Health Check
+gcloud compute health-checks create http web-lb-health-check \
+  --port=80 \
+  --check-interval=10s \
+  --timeout=5s
+
+# Backend Service
+gcloud compute backend-services create web-lb-backend \
+  --protocol=HTTP \
+  --port-name=http \
+  --health-checks=web-lb-health-check \
+  --global
+
+gcloud compute backend-services add-backend web-lb-backend \
+  --instance-group=web-server-group \
+  --instance-group-zone=us-central1-a \
+  --global
+
+# URL Map
+gcloud compute url-maps create web-lb-url-map \
+  --default-service=web-lb-backend
+
+# Target Proxy
+gcloud compute target-http-proxies create web-lb-proxy \
+  --url-map=web-lb-url-map
+
+# Frontend (Global Forwarding Rule)
+gcloud compute forwarding-rules create web-lb-forwarding-rule \
+  --global \
+  --target-http-proxy=web-lb-proxy \
+  --ports=80</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>7. Enable Autohealing</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instance-groups managed update web-server-group \
+  --zone=us-central1-a \
+  --health-check=web-lb-health-check \
+  --initial-delay=300</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Try the Simulator</h2>
+        <div style="text-align: center; padding: 30px;">
+          <a href="../demos/loadbalancer-demo.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 18px 40px;">
+            ⚖️ Launch Load Balancer Simulator
+          </a>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Cleanup</h2>
+        <div class="info-box warning">
+          <h4>⚠️ Important</h4>
+          <p>Delete all resources to avoid charges!</p>
+        </div>
+        <div class="command-section">
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Delete in reverse order
+gcloud compute forwarding-rules delete web-lb-forwarding-rule --global --quiet
+gcloud compute target-http-proxies delete web-lb-proxy --quiet
+gcloud compute url-maps delete web-lb-url-map --quiet
+gcloud compute backend-services delete web-lb-backend --global --quiet
+gcloud compute health-checks delete web-lb-health-check --quiet
+gcloud compute instance-groups managed delete web-server-group --zone=us-central1-a --quiet
+gcloud compute instance-templates delete web-server-template --quiet
+gcloud compute images delete web-server-image --quiet
+gcloud compute firewall-rules delete allow-http allow-health-check --quiet</code>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-nav">
+      <a href="module-6.html" class="nav-btn prev">← Module 6</a>
+      <a href="../index.html#modules" class="nav-btn next">All Modules →</a>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

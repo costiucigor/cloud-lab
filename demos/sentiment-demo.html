@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentiment Analyzer Demo | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .demo-container {
+      padding: 120px 60px 60px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .demo-header h1 { font-size: 2.5rem; margin-bottom: 15px; }
+    .demo-header p { color: var(--text-secondary); }
+    
+    .demo-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .demo-panel h2 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: var(--accent-primary);
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      margin-bottom: 20px;
+    }
+    
+    textarea::placeholder { color: var(--text-muted); }
+    textarea:focus { outline: none; border-color: var(--accent-primary); }
+    
+    .btn-analyze {
+      width: 100%;
+      padding: 15px;
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-analyze:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,217,255,0.3);
+    }
+    
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .example-btn {
+      padding: 8px 15px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .example-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+    }
+    
+    .result-card {
+      background: rgba(255,255,255,0.03);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .sentiment-emoji {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+    
+    .sentiment-label {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .sentiment-positive { color: var(--accent-secondary); }
+    .sentiment-negative { color: var(--accent-tertiary); }
+    .sentiment-neutral { color: var(--accent-quaternary); }
+    
+    .score-bar {
+      height: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .score-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+    
+    .score-marker {
+      position: absolute;
+      top: -25px;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .metric-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    
+    .metric-value {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    
+    .hidden { display: none !important; }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-bottom: 30px;
+      transition: color 0.3s;
+    }
+    
+    .back-link:hover { color: var(--accent-primary); }
+    
+    @media (max-width: 768px) {
+      .demo-container { padding: 100px 20px 40px; }
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="demo-container">
+    <a href="../index.html#demos" class="back-link">← Back to Demos</a>
+    
+    <div class="demo-header">
+      <h1>💭 Sentiment Analyzer</h1>
+      <p>Analyze text sentiment using Natural Language Processing</p>
+    </div>
+
+    <div class="demo-panel">
+      <h2>📝 Enter Text</h2>
+      
+      <div class="examples">
+        <button class="example-btn" onclick="setExample('positive')">😊 Positive Example</button>
+        <button class="example-btn" onclick="setExample('negative')">😞 Negative Example</button>
+        <button class="example-btn" onclick="setExample('neutral')">😐 Neutral Example</button>
+      </div>
+      
+      <textarea id="textInput" placeholder="Enter text to analyze sentiment...&#10;&#10;Example: This product is amazing! I love it so much."></textarea>
+      
+      <button class="btn-analyze" onclick="analyzeSentiment()">📊 Analyze Sentiment</button>
+    </div>
+
+    <div class="demo-panel hidden" id="resultsPanel">
+      <h2>📊 Analysis Results</h2>
+      
+      <div class="result-card">
+        <div class="sentiment-emoji" id="sentimentEmoji">😊</div>
+        <div class="sentiment-label" id="sentimentLabel">Positive</div>
+        <p style="color: var(--text-secondary);" id="sentimentDesc">The text expresses positive sentiment</p>
+      </div>
+      
+      <div class="score-bar">
+        <div class="score-fill" id="scoreFill" style="width: 50%; background: var(--gradient-primary);"></div>
+        <div class="score-marker" id="scoreMarker" style="left: 50%;">0.00</div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 25px;">
+        <span>-1.0 (Negative)</span>
+        <span>0 (Neutral)</span>
+        <span>+1.0 (Positive)</span>
+      </div>
+      
+      <div class="metrics-grid">
+        <div class="metric-item">
+          <div class="metric-label">Sentiment Score</div>
+          <div class="metric-value" id="scoreValue">0.00</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Magnitude</div>
+          <div class="metric-value" id="magnitudeValue">0.00</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Confidence</div>
+          <div class="metric-value" id="confidenceValue">0%</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Word Count</div>
+          <div class="metric-value" id="wordCount">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const examples = {
+      positive: "This product is absolutely amazing! I love everything about it. The quality is outstanding and the customer service was excellent. Highly recommended!",
+      negative: "Terrible experience. The product arrived broken and customer support was unhelpful. Complete waste of money. I will never buy from this company again.",
+      neutral: "The package arrived on Tuesday. It contains the items I ordered. The color is blue and the size is medium. Shipping took about 5 days."
+    };
+    
+    function setExample(type) {
+      document.getElementById('textInput').value = examples[type];
+    }
+    
+    function analyzeSentiment() {
+      const text = document.getElementById('textInput').value.trim();
+      if (!text) {
+        alert('Please enter some text to analyze');
+        return;
+      }
+      
+      // Simple sentiment analysis simulation
+      const positiveWords = ['amazing', 'love', 'excellent', 'great', 'wonderful', 'fantastic', 'best', 'happy', 'good', 'outstanding', 'recommended'];
+      const negativeWords = ['terrible', 'awful', 'hate', 'worst', 'bad', 'horrible', 'disappointing', 'waste', 'broken', 'unhelpful', 'never'];
+      
+      const words = text.toLowerCase().split(/\s+/);
+      let positiveCount = 0;
+      let negativeCount = 0;
+      
+      words.forEach(word => {
+        if (positiveWords.some(pw => word.includes(pw))) positiveCount++;
+        if (negativeWords.some(nw => word.includes(nw))) negativeCount++;
+      });
+      
+      const total = positiveCount + negativeCount || 1;
+      let score = (positiveCount - negativeCount) / total;
+      score = Math.max(-1, Math.min(1, score * 1.5)); // Amplify and clamp
+      
+      const magnitude = (positiveCount + negativeCount) / words.length * 5;
+      
+      displayResults(score, magnitude, words.length);
+    }
+    
+    function displayResults(score, magnitude, wordCount) {
+      document.getElementById('resultsPanel').classList.remove('hidden');
+      
+      // Determine sentiment
+      let emoji, label, desc, colorClass;
+      if (score > 0.2) {
+        emoji = '😊';
+        label = 'Positive';
+        desc = 'The text expresses positive sentiment';
+        colorClass = 'sentiment-positive';
+      } else if (score < -0.2) {
+        emoji = '😞';
+        label = 'Negative';
+        desc = 'The text expresses negative sentiment';
+        colorClass = 'sentiment-negative';
+      } else {
+        emoji = '😐';
+        label = 'Neutral';
+        desc = 'The text is relatively neutral';
+        colorClass = 'sentiment-neutral';
+      }
+      
+      document.getElementById('sentimentEmoji').textContent = emoji;
+      document.getElementById('sentimentLabel').textContent = label;
+      document.getElementById('sentimentLabel').className = 'sentiment-label ' + colorClass;
+      document.getElementById('sentimentDesc').textContent = desc;
+      
+      // Score bar
+      const percentage = ((score + 1) / 2) * 100;
+      document.getElementById('scoreFill').style.width = percentage + '%';
+      document.getElementById('scoreMarker').style.left = percentage + '%';
+      document.getElementById('scoreMarker').textContent = score.toFixed(2);
+      
+      // Gradient color based on score
+      if (score > 0.2) {
+        document.getElementById('scoreFill').style.background = 'linear-gradient(90deg, var(--accent-quaternary), var(--accent-secondary))';
+      } else if (score < -0.2) {
+        document.getElementById('scoreFill').style.background = 'linear-gradient(90deg, var(--accent-tertiary), var(--accent-quaternary))';
+      } else {
+        document.getElementById('scoreFill').style.background = 'var(--accent-quaternary)';
+      }
+      
+      // Metrics
+      document.getElementById('scoreValue').textContent = score.toFixed(2);
+      document.getElementById('magnitudeValue').textContent = magnitude.toFixed(2);
+      document.getElementById('confidenceValue').textContent = Math.min(95, Math.round(60 + magnitude * 20)) + '%';
+      document.getElementById('wordCount').textContent = wordCount;
+      
+      // Scroll to results
+      document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

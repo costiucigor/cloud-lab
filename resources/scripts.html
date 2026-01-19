@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCP Scripts | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <a href="../index.html#resources" class="back-link" style="display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); text-decoration: none; margin-bottom: 30px;">← Back to Resources</a>
+    
+    <div class="module-header">
+      <h1>📋 GCP Scripts Collection</h1>
+      <p>Ready-to-use gcloud commands for all modules</p>
+    </div>
+
+    <div class="module-content">
+      <!-- Module 2 -->
+      <section class="content-section">
+        <h2>Module 2: VM & Storage</h2>
+        
+        <div class="command-section">
+          <h4>Create VM</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances create linux-web-server \
+  --zone=europe-central2-a \
+  --machine-type=e2-micro \
+  --tags=http-server \
+  --image-family=debian-12 \
+  --image-project=debian-cloud \
+  --boot-disk-size=10GB</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Delete VM</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances delete linux-web-server --zone=europe-central2-a --quiet</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 3 -->
+      <section class="content-section">
+        <h2>Module 3: 2-Tier Architecture</h2>
+        
+        <div class="command-section">
+          <h4>Create Web Server</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances create linux-web-server \
+  --zone=europe-central2-a \
+  --machine-type=e2-micro \
+  --tags=http-server,ssh-server \
+  --image-family=debian-12 \
+  --image-project=debian-cloud</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create MySQL Server</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances create linux-mysql-server \
+  --zone=europe-central2-a \
+  --machine-type=e2-micro \
+  --tags=ssh-server \
+  --image-family=debian-12 \
+  --image-project=debian-cloud</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 4 -->
+      <section class="content-section">
+        <h2>Module 4: VPC Networking</h2>
+        
+        <div class="command-section">
+          <h4>Create VPC</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute networks create demo-vpc-1 \
+  --subnet-mode=custom \
+  --bgp-routing-mode=regional</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create Subnet</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute networks subnets create subnet-1 \
+  --network=demo-vpc-1 \
+  --region=us-central1 \
+  --range=10.1.0.0/16</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create Firewall Rules</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Allow ICMP (ping)
+gcloud compute firewall-rules create demo-vpc-1-allow-icmp \
+  --network=demo-vpc-1 --allow=icmp --source-ranges=0.0.0.0/0
+
+# Allow SSH
+gcloud compute firewall-rules create demo-vpc-1-allow-ssh \
+  --network=demo-vpc-1 --allow=tcp:22 \
+  --source-ranges=0.0.0.0/0 --target-tags=ssh-from-all
+
+# Allow HTTP
+gcloud compute firewall-rules create demo-vpc-1-allow-http \
+  --network=demo-vpc-1 --allow=tcp:80 \
+  --source-ranges=0.0.0.0/0 --target-tags=http-from-all
+
+# Allow MySQL (internal only)
+gcloud compute firewall-rules create demo-vpc-1-allow-mysql \
+  --network=demo-vpc-1 --allow=tcp:3306 \
+  --source-ranges=10.1.0.2/32 --target-tags=mysql-from-web-server</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 7 -->
+      <section class="content-section">
+        <h2>Module 7: Load Balancer</h2>
+        
+        <div class="command-section">
+          <h4>Create Instance Template</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instance-templates create web-server-template \
+  --machine-type=e2-small \
+  --image=web-server-disk-image \
+  --tags=http-server,allow-health-check</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create Instance Group</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instance-groups managed create web-server-group \
+  --zone=us-central1-a \
+  --template=web-server-template \
+  --size=2
+
+gcloud compute instance-groups managed set-autoscaling web-server-group \
+  --zone=us-central1-a \
+  --min-num-replicas=2 \
+  --max-num-replicas=4 \
+  --target-cpu-utilization=0.6</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create Load Balancer</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Health Check
+gcloud compute health-checks create http web-lb-health-check --port=80
+
+# Backend Service
+gcloud compute backend-services create web-lb-backend \
+  --protocol=HTTP --port-name=http \
+  --health-checks=web-lb-health-check --global
+
+gcloud compute backend-services add-backend web-lb-backend \
+  --instance-group=web-server-group \
+  --instance-group-zone=us-central1-a --global
+
+# URL Map & Proxy
+gcloud compute url-maps create web-lb-url-map \
+  --default-service=web-lb-backend
+
+gcloud compute target-http-proxies create web-lb-proxy \
+  --url-map=web-lb-url-map
+
+# Frontend
+gcloud compute forwarding-rules create web-lb-forwarding-rule \
+  --global --target-http-proxy=web-lb-proxy --ports=80</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cleanup -->
+      <section class="content-section">
+        <h2>⚠️ Cleanup Commands</h2>
+        
+        <div class="info-box warning">
+          <h4>⚠️ Important</h4>
+          <p>Always delete resources after use to avoid charges!</p>
+        </div>
+
+        <div class="command-section">
+          <h4>Delete All Resources</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Delete VMs
+gcloud compute instances delete linux-web-server --zone=europe-central2-a --quiet
+gcloud compute instances delete linux-mysql-server --zone=europe-central2-a --quiet
+
+# Delete Firewall Rules
+gcloud compute firewall-rules delete demo-vpc-1-allow-icmp --quiet
+gcloud compute firewall-rules delete demo-vpc-1-allow-ssh --quiet
+gcloud compute firewall-rules delete demo-vpc-1-allow-http --quiet
+gcloud compute firewall-rules delete demo-vpc-1-allow-mysql --quiet
+
+# Delete VPC
+gcloud compute networks subnets delete subnet-1 --region=us-central1 --quiet
+gcloud compute networks delete demo-vpc-1 --quiet</code>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

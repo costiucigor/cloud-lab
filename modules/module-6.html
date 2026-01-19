@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 6 - Machine Learning | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 06</div>
+      <h1>🧠 Machine Learning</h1>
+      <p>Vertex AI, AutoML, Model Training and Deployment</p>
+    </div>
+
+    <div class="module-content">
+      <section class="content-section">
+        <h2>Vertex AI Workflow</h2>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 30px 0;">
+          <div style="text-align: center; padding: 20px; background: var(--bg-card); border-radius: 10px; min-width: 120px;">
+            <div style="font-size: 2rem;">📊</div>
+            <div style="font-weight: 600; margin-top: 10px;">Data</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Upload CSV</div>
+          </div>
+          <div style="font-size: 2rem; color: var(--accent-primary); align-self: center;">→</div>
+          <div style="text-align: center; padding: 20px; background: var(--bg-card); border-radius: 10px; min-width: 120px;">
+            <div style="font-size: 2rem;">🏋️</div>
+            <div style="font-weight: 600; margin-top: 10px;">Train</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">AutoML</div>
+          </div>
+          <div style="font-size: 2rem; color: var(--accent-primary); align-self: center;">→</div>
+          <div style="text-align: center; padding: 20px; background: var(--bg-card); border-radius: 10px; min-width: 120px;">
+            <div style="font-size: 2rem;">📈</div>
+            <div style="font-weight: 600; margin-top: 10px;">Evaluate</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Metrics</div>
+          </div>
+          <div style="font-size: 2rem; color: var(--accent-primary); align-self: center;">→</div>
+          <div style="text-align: center; padding: 20px; background: var(--bg-card); border-radius: 10px; min-width: 120px;">
+            <div style="font-size: 2rem;">🚀</div>
+            <div style="font-weight: 600; margin-top: 10px;">Deploy</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Endpoint</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Dataset: Flags Classification</h2>
+        <p>The dataset contains 3 classes (0, 1, 2) with x, y coordinates for classification.</p>
+        
+        <div class="code-block">
+          <pre><code># flags.csv sample
+x,y,t
+0.123,0.456,0
+0.789,0.234,1
+0.567,0.891,2
+...</code></pre>
+        </div>
+
+        <div class="command-section">
+          <h4>Visualize Data (Python)</h4>
+          <div class="command-block">
+            <code>import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('flags.csv')
+
+plt.figure(figsize=(10, 8))
+colors = {0.0: 'red', 1.0: 'green', 2.0: 'blue'}
+for t_val in df['t'].unique():
+    subset = df[df['t'] == t_val]
+    plt.scatter(subset['x'], subset['y'], 
+                c=colors.get(t_val, 'gray'),
+                label=f't={t_val}', alpha=0.5, s=10)
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Data Distribution by Class')
+plt.legend()
+plt.savefig('visualization.png')
+plt.show()</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Vertex AI Commands</h2>
+        
+        <div class="command-section">
+          <h4>1. Create Dataset</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Upload CSV to Cloud Storage first
+gsutil cp flags.csv gs://YOUR_BUCKET/flags.csv
+
+# Create dataset via Console:
+# Vertex AI → Datasets → Create → Tabular → Classification</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>2. Train Model</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># In Vertex AI Console:
+# 1. Select dataset
+# 2. Choose target column: t
+# 3. Select AutoML
+# 4. Set budget: 1 node hour (minimum)
+# 5. Start training</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>3. Evaluate Model</h4>
+          <div class="command-block">
+            <code># After training, check:
+# - Confusion Matrix
+# - Precision / Recall
+# - F1 Score
+# - ROC Curve</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>4. Deploy to Endpoint</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Deploy model to endpoint for predictions
+# Vertex AI → Model Registry → Deploy to Endpoint
+
+# Make prediction via API:
+curl -X POST \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  "https://REGION-aiplatform.googleapis.com/v1/projects/PROJECT/locations/REGION/endpoints/ENDPOINT:predict" \
+  -d '{"instances": [{"x": 0.5, "y": 0.3}]}'</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Key Metrics</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">🎯</span>
+            <h4>Precision</h4>
+            <p>Of all positive predictions, how many were correct?</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📊</span>
+            <h4>Recall</h4>
+            <p>Of all actual positives, how many did we find?</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">⚖️</span>
+            <h4>F1 Score</h4>
+            <p>Harmonic mean of precision and recall</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📉</span>
+            <h4>Confusion Matrix</h4>
+            <p>Visual breakdown of predictions vs actual</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-nav">
+      <a href="module-5.html" class="nav-btn prev">← Module 5</a>
+      <a href="module-7.html" class="nav-btn next">Module 7 →</a>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

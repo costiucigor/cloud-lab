@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 2 - IaaS VMs & Storage | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="../index.html#modules" class="nav-link active">Modules</a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 02</div>
+      <h1>🖥️ IaaS - VMs & Storage</h1>
+      <p>Virtual Machines, Cloud Storage, and Static Website Hosting</p>
+    </div>
+
+    <div class="module-content">
+      <section class="content-section">
+        <h2>Overview</h2>
+        <p>Infrastructure as a Service (IaaS) provides virtualized computing resources over the internet. In this module, you'll learn to create and manage VMs and Cloud Storage buckets.</p>
+        
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">🖥️</span>
+            <h4>Compute Engine</h4>
+            <p>Create and manage Linux/Windows virtual machines</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🗄️</span>
+            <h4>Cloud Storage</h4>
+            <p>Object storage with worldwide edge caching</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🌐</span>
+            <h4>Static Hosting</h4>
+            <p>Host static websites directly from buckets</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📸</span>
+            <h4>Snapshots</h4>
+            <p>Backup and restore VM disks</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Key Commands</h2>
+        
+        <div class="command-section">
+          <h4>Create a VM</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gcloud compute instances create my-vm \
+  --zone=europe-central2-a \
+  --machine-type=e2-micro \
+  --image-family=debian-12 \
+  --image-project=debian-cloud \
+  --tags=http-server</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Create a Storage Bucket</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>gsutil mb -l europe-central2 gs://my-bucket-name
+
+# Upload files
+gsutil cp index.html gs://my-bucket-name/
+
+# Make public
+gsutil iam ch allUsers:objectViewer gs://my-bucket-name</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Static Website Hosting</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Set main page
+gsutil web set -m index.html gs://my-bucket-name
+
+# Access at: https://storage.googleapis.com/my-bucket-name/index.html</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Lab Exercise</h2>
+        <div class="exercise-card">
+          <div class="exercise-header">
+            <span class="exercise-number">1</span>
+            <h3>Create a Web Server VM</h3>
+          </div>
+          <p>Create a Linux VM, install Node.js, and serve a web application.</p>
+          
+          <div class="steps-list">
+            <div class="step">
+              <span class="step-number">1</span>
+              <div class="step-content">
+                <h4>Create VM via Cloud Shell</h4>
+                <p>Run the create command with http-server tag</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <div class="step-content">
+                <h4>SSH into VM</h4>
+                <p>Connect via SSH and install Node.js</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <div class="step-content">
+                <h4>Deploy Application</h4>
+                <p>Upload and run your Node.js server</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-nav">
+      <a href="module-1.html" class="nav-btn prev">← Module 1</a>
+      <a href="module-3.html" class="nav-btn next">Module 3 →</a>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

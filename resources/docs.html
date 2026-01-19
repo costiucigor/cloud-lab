@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <a href="../index.html#resources" class="back-link" style="display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); text-decoration: none; margin-bottom: 30px;">← Back to Resources</a>
+    
+    <div class="module-header">
+      <h1>📖 Documentation</h1>
+      <p>Step-by-step guides for running all projects</p>
+    </div>
+
+    <div class="module-content">
+      <!-- Quick Start -->
+      <section class="content-section">
+        <h2>🚀 Quick Start</h2>
+        
+        <div class="steps-list">
+          <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>Clone/Download the Project</h4>
+              <p>Download all files to your local machine</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>Install Dependencies</h4>
+              <div class="command-block" style="margin-top: 10px;">
+                <code>cd cloud-technologies-site
+npm install</code>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>Configure GCP (Optional)</h4>
+              <p>For full API functionality, set your credentials:</p>
+              <div class="command-block" style="margin-top: 10px;">
+                <code>export GOOGLE_APPLICATION_CREDENTIALS="path/to/key.json"</code>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>Start the Server</h4>
+              <div class="command-block" style="margin-top: 10px;">
+                <code>npm start
+# Open http://localhost:3000</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 1 -->
+      <section class="content-section">
+        <h2>Module 1: Google Apps Script</h2>
+        
+        <div class="exercise-card">
+          <h4>Setup Instructions</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Go to <a href="https://script.google.com" target="_blank" style="color: var(--accent-primary);">script.google.com</a></li>
+            <li>Create new project</li>
+            <li>Copy <code>Code.gs</code> content</li>
+            <li>Create HTML files: File → New → HTML</li>
+            <li>Update <code>appsscript.json</code> (Project Settings → Show manifest)</li>
+            <li>Create a Google Sheet and copy its ID</li>
+            <li>Replace <code>YOUR_SPREADSHEET_ID_HERE</code> in code</li>
+            <li>Run function and authorize</li>
+          </ol>
+        </div>
+
+        <div class="info-box">
+          <h4>💡 Tip</h4>
+          <p>For form triggers, go to Triggers → Add Trigger → Select "onFormSubmit" → On form submit</p>
+        </div>
+      </section>
+
+      <!-- Module 2-4 -->
+      <section class="content-section">
+        <h2>Modules 2-4: GCP Infrastructure</h2>
+        
+        <div class="exercise-card">
+          <h4>Running Shell Scripts</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Open <a href="https://shell.cloud.google.com" target="_blank" style="color: var(--accent-primary);">Google Cloud Shell</a></li>
+            <li>Upload script files or paste content</li>
+            <li>Make executable: <code>chmod +x script.sh</code></li>
+            <li>Run: <code>./script.sh</code></li>
+            <li>Wait for resources to be created</li>
+            <li>Access via external IP shown in output</li>
+          </ol>
+        </div>
+
+        <div class="info-box warning">
+          <h4>⚠️ Cleanup</h4>
+          <p>Always run the delete script when done to avoid charges!</p>
+        </div>
+      </section>
+
+      <!-- Module 5 -->
+      <section class="content-section">
+        <h2>Module 5: PaaS & AI APIs</h2>
+        
+        <div class="exercise-card">
+          <h4>App Engine Deployment</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Enable App Engine API in GCP Console</li>
+            <li>Run <code>gcloud app create --region=europe-west1</code></li>
+            <li>Deploy: <code>gcloud app deploy</code></li>
+            <li>View: <code>gcloud app browse</code></li>
+          </ol>
+        </div>
+
+        <div class="exercise-card">
+          <h4>AI APIs Setup</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Enable APIs: Vision, Translation, Text-to-Speech, Natural Language</li>
+            <li>Create Service Account with appropriate roles</li>
+            <li>Download JSON key</li>
+            <li>Set <code>GOOGLE_APPLICATION_CREDENTIALS</code> environment variable</li>
+            <li>Install dependencies: <code>npm install</code></li>
+            <li>Run server: <code>node server.js</code></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Module 6 -->
+      <section class="content-section">
+        <h2>Module 6: Machine Learning</h2>
+        
+        <div class="exercise-card">
+          <h4>Vertex AI Training</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Upload <code>flags.csv</code> to Cloud Storage bucket</li>
+            <li>Go to Vertex AI → Datasets → Create</li>
+            <li>Select Tabular, Classification</li>
+            <li>Import from Cloud Storage</li>
+            <li>Train with AutoML (1 node hour minimum)</li>
+            <li>Evaluate metrics after training</li>
+            <li>Deploy to endpoint for predictions</li>
+          </ol>
+        </div>
+
+        <div class="exercise-card">
+          <h4>Python Visualization</h4>
+          <div class="command-block">
+            <code># Install dependencies
+pip install pandas matplotlib
+
+# Run visualization
+python visualize-data.py</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 7 -->
+      <section class="content-section">
+        <h2>Module 7: Load Balancing</h2>
+        
+        <div class="exercise-card">
+          <h4>Full Setup</h4>
+          <ol style="color: var(--text-secondary); line-height: 2;">
+            <li>Upload <code>full-setup.sh</code> to Cloud Shell</li>
+            <li>Edit USERNAME variable in script</li>
+            <li>Run: <code>./full-setup.sh</code></li>
+            <li>Wait 5-10 minutes for all resources</li>
+            <li>Get Load Balancer IP from output</li>
+            <li>Test by refreshing page (different hostname each time)</li>
+          </ol>
+        </div>
+
+        <div class="info-box">
+          <h4>💡 Testing Load Balancer</h4>
+          <p>Run <code>for i in {1..10}; do curl http://LB_IP/; done</code> to see traffic distributed across VMs</p>
+        </div>
+      </section>
+
+      <!-- API Reference -->
+      <section class="content-section">
+        <h2>API Reference (This Site)</h2>
+        
+        <div class="command-section">
+          <h4>POST /api/vision/labels</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 10px;">Detect labels in an image</p>
+          <div class="command-block">
+            <code>curl -X POST -F "image=@photo.jpg" http://localhost:3000/api/vision/labels</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>POST /api/translate</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 10px;">Translate text</p>
+          <div class="command-block">
+            <code>curl -X POST -H "Content-Type: application/json" \
+  -d '{"text": "Hello", "targetLanguage": "ro"}' \
+  http://localhost:3000/api/translate</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>POST /api/sentiment</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 10px;">Analyze sentiment</p>
+          <div class="command-block">
+            <code>curl -X POST -H "Content-Type: application/json" \
+  -d '{"text": "This is amazing!"}' \
+  http://localhost:3000/api/sentiment</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>POST /api/vision-pipeline</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 10px;">Full pipeline: detect → translate → TTS</p>
+          <div class="command-block">
+            <code>curl -X POST -F "image=@photo.jpg" http://localhost:3000/api/vision-pipeline</code>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

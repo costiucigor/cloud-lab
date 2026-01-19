@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3 - 2-Tier Architecture | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 03</div>
+      <h1>🏗️ 2-Tier Architecture</h1>
+      <p>Web Server + Database Server Distributed System</p>
+    </div>
+
+    <div class="module-content">
+      <section class="content-section">
+        <h2>Architecture Overview</h2>
+        <div style="background: var(--bg-card); border-radius: 15px; padding: 30px; text-align: center; margin-bottom: 30px;">
+          <div style="display: flex; justify-content: center; align-items: center; gap: 50px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+              <div style="font-size: 3rem; margin-bottom: 10px;">🌐</div>
+              <div style="font-weight: 600;">Client</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Browser</div>
+            </div>
+            <div style="font-size: 2rem; color: var(--accent-primary);">→</div>
+            <div style="text-align: center; background: rgba(0,217,255,0.1); padding: 20px; border-radius: 10px;">
+              <div style="font-size: 3rem; margin-bottom: 10px;">🖥️</div>
+              <div style="font-weight: 600;">Web Server</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Node.js + Express</div>
+              <div style="font-size: 0.75rem; color: var(--accent-primary); margin-top: 5px;">10.1.0.2 (Internal)</div>
+            </div>
+            <div style="font-size: 2rem; color: var(--accent-secondary);">→</div>
+            <div style="text-align: center; background: rgba(0,255,136,0.1); padding: 20px; border-radius: 10px;">
+              <div style="font-size: 3rem; margin-bottom: 10px;">🗄️</div>
+              <div style="font-weight: 600;">MySQL Server</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">MariaDB</div>
+              <div style="font-size: 0.75rem; color: var(--accent-secondary); margin-top: 5px;">10.1.0.3 (Internal)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Setup Script</h2>
+        <div class="info-box">
+          <h4>💡 Automated Setup</h4>
+          <p>This script creates both VMs with all software pre-installed and configured.</p>
+        </div>
+
+        <div class="command-section">
+          <h4>create-2tier.sh</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code>#!/bin/bash
+# Create VPC
+gcloud compute networks create demo-vpc --subnet-mode=custom
+gcloud compute networks subnets create subnet-1 \
+  --network=demo-vpc --region=europe-central2 --range=10.1.0.0/24
+
+# Firewall rules
+gcloud compute firewall-rules create allow-http \
+  --network=demo-vpc --allow=tcp:80 --target-tags=http-server
+gcloud compute firewall-rules create allow-mysql-internal \
+  --network=demo-vpc --allow=tcp:3306 --source-ranges=10.1.0.0/24
+
+# Create Web Server
+gcloud compute instances create linux-web-server \
+  --zone=europe-central2-a --machine-type=e2-micro \
+  --network=demo-vpc --subnet=subnet-1 \
+  --private-network-ip=10.1.0.2 \
+  --tags=http-server \
+  --metadata=startup-script='#!/bin/bash
+apt-get update && apt-get install -y nodejs npm
+# ... (full server setup)
+'
+
+# Create MySQL Server
+gcloud compute instances create linux-mysql-server \
+  --zone=europe-central2-a --machine-type=e2-micro \
+  --network=demo-vpc --subnet=subnet-1 \
+  --private-network-ip=10.1.0.3 \
+  --metadata=startup-script='#!/bin/bash
+apt-get update && apt-get install -y mariadb-server
+# ... (full database setup)
+'</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Node.js Server Code</h2>
+        <div class="code-block">
+          <pre><code>const express = require("express");
+const mysql = require("mysql");
+const app = express();
+
+const pool = mysql.createPool({
+  host: "10.1.0.3",  // Internal IP of MySQL server
+  port: 3306,
+  user: "root",
+  password: "sa",
+  database: "first_db"
+});
+
+app.get("/student", (req, res) => {
+  const name = req.query.name;
+  pool.getConnection((err, con) => {
+    if (err) return res.status(500).send("DB connection error");
+    con.query("SELECT * FROM student WHERE name = ?", [name], (err, result) => {
+      con.release();
+      if (err) return res.status(500).send("Query error");
+      res.json(result);
+    });
+  });
+});
+
+app.listen(80, () => console.log("Server running on port 80"));</code></pre>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-nav">
+      <a href="module-2.html" class="nav-btn prev">← Module 2</a>
+      <a href="module-4.html" class="nav-btn next">Module 4 →</a>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

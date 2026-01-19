@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5 - PaaS & AI APIs | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 05</div>
+      <h1>🤖 PaaS & AI APIs</h1>
+      <p>App Engine, Cloud SQL, Vision API, Translation, Text-to-Speech</p>
+    </div>
+
+    <div class="module-content">
+      <section class="content-section">
+        <h2>Google Cloud AI APIs</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">👁️</span>
+            <h4>Vision API</h4>
+            <p>Label detection, object localization, OCR, safe search</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🌐</span>
+            <h4>Translation API</h4>
+            <p>Translate text between 100+ languages</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🔊</span>
+            <h4>Text-to-Speech</h4>
+            <p>Convert text to natural speech audio</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">💭</span>
+            <h4>Natural Language</h4>
+            <p>Sentiment analysis, entity extraction</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>App Engine Setup</h2>
+        
+        <div class="command-section">
+          <h4>app.yaml</h4>
+          <div class="command-block">
+            <code>runtime: nodejs18
+
+instance_class: F1
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2
+
+env_variables:
+  NODE_ENV: "production"</code>
+          </div>
+        </div>
+
+        <div class="command-section">
+          <h4>Deploy to App Engine</h4>
+          <div class="command-block">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <code># Initialize App Engine (first time only)
+gcloud app create --region=europe-west1
+
+# Deploy
+gcloud app deploy
+
+# View logs
+gcloud app logs tail -s default
+
+# Open in browser
+gcloud app browse</code>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Vision API Example</h2>
+        <div class="code-block">
+          <pre><code>const vision = require('@google-cloud/vision');
+const client = new vision.ImageAnnotatorClient();
+
+async function detectLabels(imagePath) {
+  const [result] = await client.labelDetection(imagePath);
+  const labels = result.labelAnnotations;
+  
+  labels.forEach(label => {
+    console.log(`${label.description}: ${(label.score * 100).toFixed(1)}%`);
+  });
+  
+  return labels;
+}
+
+// Usage
+detectLabels('./image.jpg');</code></pre>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Translation + TTS Pipeline</h2>
+        <div class="code-block">
+          <pre><code>const {Translate} = require('@google-cloud/translate').v2;
+const textToSpeech = require('@google-cloud/text-to-speech');
+
+const translateClient = new Translate();
+const ttsClient = new textToSpeech.TextToSpeechClient();
+
+async function translateAndSpeak(text, targetLang = 'ro') {
+  // Translate
+  const [translation] = await translateClient.translate(text, targetLang);
+  console.log(`Translation: ${translation}`);
+  
+  // Text to Speech
+  const [response] = await ttsClient.synthesizeSpeech({
+    input: { text: translation },
+    voice: { languageCode: 'ro-RO', ssmlGender: 'FEMALE' },
+    audioConfig: { audioEncoding: 'MP3' }
+  });
+  
+  // Save audio
+  require('fs').writeFileSync('output.mp3', response.audioContent);
+  return translation;
+}</code></pre>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h2>Try the Demo</h2>
+        <div style="text-align: center; padding: 30px;">
+          <a href="../demos/vision-demo.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 18px 40px;">
+            🔬 Launch Vision Pipeline Demo
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <div class="module-nav">
+      <a href="module-4.html" class="nav-btn prev">← Module 4</a>
+      <a href="module-6.html" class="nav-btn next">Module 6 →</a>
+    </div>
+  </main>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

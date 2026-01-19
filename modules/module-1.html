@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 1 - Google Apps Script | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/module-page.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="../index.html#modules" class="nav-link active">Modules</a>
+      <a href="../index.html#demos" class="nav-link">Demos</a>
+    </div>
+  </nav>
+
+  <main class="module-page">
+    <div class="module-header">
+      <div class="module-badge">Module 01</div>
+      <h1>📜 Google Apps Script</h1>
+      <p>Automate Google Workspace with JavaScript</p>
+    </div>
+
+    <div class="module-content">
+      <!-- Overview -->
+      <section class="content-section">
+        <h2>Overview</h2>
+        <p>Google Apps Script is a cloud-based JavaScript platform that lets you integrate with and automate tasks across Google products like Gmail, Sheets, Docs, and Forms.</p>
+        
+        <div class="features-grid">
+          <div class="feature-item">
+            <span class="feature-icon">📧</span>
+            <h4>Gmail Automation</h4>
+            <p>Send personalized emails, search messages, create filters</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📊</span>
+            <h4>Sheets Integration</h4>
+            <p>Read/write data, create custom functions, automate reports</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📝</span>
+            <h4>Forms Processing</h4>
+            <p>Handle form submissions, send confirmations, log responses</p>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">⏰</span>
+            <h4>Triggers</h4>
+            <p>Time-based or event-based automatic execution</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exercises -->
+      <section class="content-section">
+        <h2>Lab Exercises</h2>
+        
+        <div class="exercise-card">
+          <div class="exercise-header">
+            <span class="exercise-number">1</span>
+            <h3>Customer Email System</h3>
+          </div>
+          <p>Send personalized HTML emails to customers from Google Sheets data.</p>
+          <div class="code-block">
+            <pre><code>function sendCustomerEmails() {
+  var file = DriveApp.getFileById("SPREADSHEET_ID");
+  var spreadsheet = SpreadsheetApp.open(file);
+  var data = spreadsheet.getSheets()[0].getDataRange().getValues();
+  
+  var template = HtmlService.createTemplateFromFile("customer-email");
+  
+  for (var i = 1; i < data.length; i++) {
+    template.customerName = data[i][0];
+    template.paymentAmount = data[i][1];
+    var email = data[i][2];
+    
+    var htmlBody = template.evaluate().getContent();
+    GmailApp.sendEmail(email, "Payment Confirmation", "", {htmlBody: htmlBody});
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-header">
+            <span class="exercise-number">2</span>
+            <h3>Conference Registration Form</h3>
+          </div>
+          <p>Auto-send confirmation emails when a form is submitted.</p>
+          <div class="code-block">
+            <pre><code>function onFormSubmit(e) {
+  var response = e.response;
+  var items = response.getItemResponses();
+  
+  var title = "", name = "", email = "", sections = [];
+  
+  items.forEach(function(item) {
+    var question = item.getItem().getTitle().toLowerCase();
+    var answer = item.getResponse();
+    
+    if (question.includes("title")) title = answer;
+    else if (question.includes("name")) name = answer;
+    else if (question.includes("email")) email = answer;
+    else if (question.includes("section")) sections = answer;
+  });
+  
+  // Send confirmation email...
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="exercise-card">
+          <div class="exercise-header">
+            <span class="exercise-number">3</span>
+            <h3>Email-Based Registration (Advanced)</h3>
+          </div>
+          <p>Process incoming emails and log registrations to Sheets.</p>
+        </div>
+      </section>
+
+      <!-- Setup Guide -->
+      <section class="content-section">
+        <h2>Setup Guide</h2>
+        
+        <div class="steps-list">
+          <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>Open Google Apps Script</h4>
+              <p>Go to <a href="https://script.google.com" target="_blank">script.google.com</a> and create a new project.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>Copy the Code</h4>
+              <p>Replace the default Code.gs content with the provided code.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>Create HTML Templates</h4>
+              <p>File → New → HTML for each email template.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>Configure Spreadsheet ID</h4>
+              <p>Create a Google Sheet and copy its ID into the code.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <span class="step-number">5</span>
+            <div class="step-content">
+              <h4>Run & Authorize</h4>
+              <p>Select function, click Run, and grant permissions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Download -->
+      <section class="content-section">
+        <h2>Download Files</h2>
+        <div class="download-grid">
+          <a href="../downloads/module-1/Code.gs" class="download-item" download>
+            <span class="download-icon">📄</span>
+            <span>Code.gs</span>
+          </a>
+          <a href="../downloads/module-1/customer-email.html" class="download-item" download>
+            <span class="download-icon">📧</span>
+            <span>customer-email.html</span>
+          </a>
+          <a href="../downloads/module-1/conference-confirmation.html" class="download-item" download>
+            <span class="download-icon">📧</span>
+            <span>conference-confirmation.html</span>
+          </a>
+          <a href="../downloads/module-1/appsscript.json" class="download-item" download>
+            <span class="download-icon">⚙️</span>
+            <span>appsscript.json</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Navigation -->
+    <div class="module-nav">
+      <a href="../index.html#modules" class="nav-btn prev">← All Modules</a>
+      <a href="module-2.html" class="nav-btn next">Module 2 →</a>
+    </div>
+  </main>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

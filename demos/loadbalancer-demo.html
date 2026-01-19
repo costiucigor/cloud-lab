@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Load Balancer Simulator | Cloud Technologies</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .demo-container {
+      padding: 120px 60px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .demo-header h1 { font-size: 2.5rem; margin-bottom: 15px; }
+    .demo-header p { color: var(--text-secondary); }
+    
+    .simulator {
+      display: grid;
+      grid-template-columns: 200px 1fr 300px;
+      gap: 30px;
+      align-items: start;
+    }
+    
+    @media (max-width: 1000px) {
+      .simulator { grid-template-columns: 1fr; }
+      .demo-container { padding: 100px 20px 40px; }
+    }
+    
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 15px;
+      padding: 20px;
+    }
+    
+    .panel h3 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--accent-primary);
+    }
+    
+    /* Client */
+    .client-panel {
+      text-align: center;
+    }
+    
+    .client-icon {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+    
+    .send-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s;
+    }
+    
+    .send-btn:hover {
+      transform: scale(1.02);
+    }
+    
+    .auto-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .toggle-switch {
+      width: 50px;
+      height: 26px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .toggle-switch.active {
+      background: var(--accent-secondary);
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: left 0.3s;
+    }
+    
+    .toggle-switch.active::after {
+      left: 27px;
+    }
+    
+    /* Load Balancer */
+    .lb-panel {
+      text-align: center;
+    }
+    
+    .lb-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .lb-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .lb-stat {
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    
+    .lb-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+    
+    .lb-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    /* Servers */
+    .servers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+    }
+    
+    .server-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .server-card.active {
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+    }
+    
+    .server-card.unhealthy {
+      border-color: var(--accent-tertiary);
+      opacity: 0.5;
+    }
+    
+    .server-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    .server-name {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+    
+    .server-requests {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+    
+    .server-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+    }
+    
+    .server-card.unhealthy .server-status {
+      background: var(--accent-tertiary);
+    }
+    
+    .server-toggle {
+      margin-top: 10px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 5px;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    
+    .server-toggle:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    /* Request Animation */
+    .request-dot {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 0 10px var(--accent-primary);
+    }
+    
+    /* Logs */
+    .logs-panel {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .log-entry {
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+    
+    .log-entry .time {
+      color: var(--text-muted);
+    }
+    
+    .log-entry .server {
+      color: var(--accent-secondary);
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin-bottom: 30px;
+      transition: color 0.3s;
+    }
+    
+    .back-link:hover { color: var(--accent-primary); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+        <span class="logo">☁️</span>
+        <span class="brand-text">Cloud Technologies</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="demo-container">
+    <a href="../index.html#demos" class="back-link">← Back to Demos</a>
+    
+    <div class="demo-header">
+      <h1>⚖️ Load Balancer Simulator</h1>
+      <p>Visualize how HTTP Load Balancer distributes traffic across instances</p>
+    </div>
+
+    <div class="simulator">
+      <!-- Client -->
+      <div class="panel client-panel">
+        <h3>👤 Client</h3>
+        <div class="client-icon">🖥️</div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">Send HTTP requests</p>
+        <button class="send-btn" onclick="sendRequest()">Send Request</button>
+        <div class="auto-toggle">
+          <span>Auto</span>
+          <div class="toggle-switch" id="autoToggle" onclick="toggleAuto()"></div>
+        </div>
+      </div>
+
+      <!-- Load Balancer + Servers -->
+      <div>
+        <div class="panel lb-panel" style="margin-bottom: 20px;">
+          <h3>⚖️ Load Balancer</h3>
+          <div class="lb-icon">🔄</div>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">Round Robin Distribution</p>
+          <div class="lb-stats">
+            <div class="lb-stat">
+              <div class="lb-stat-value" id="totalRequests">0</div>
+              <div class="lb-stat-label">Total Requests</div>
+            </div>
+            <div class="lb-stat">
+              <div class="lb-stat-value" id="healthyServers">4</div>
+              <div class="lb-stat-label">Healthy Servers</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🖥️ Backend Servers (Instance Group)</h3>
+          <div class="servers-grid" id="serversGrid">
+            <!-- Servers will be generated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs -->
+      <div class="panel logs-panel">
+        <h3>📋 Request Log</h3>
+        <div id="logs"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const servers = [
+      { id: 'vm-a1b2', name: 'web-server-a1b2', requests: 0, healthy: true },
+      { id: 'vm-c3d4', name: 'web-server-c3d4', requests: 0, healthy: true },
+      { id: 'vm-e5f6', name: 'web-server-e5f6', requests: 0, healthy: true },
+      { id: 'vm-g7h8', name: 'web-server-g7h8', requests: 0, healthy: true }
+    ];
+    
+    let totalRequests = 0;
+    let currentServerIndex = 0;
+    let autoMode = false;
+    let autoInterval = null;
+    
+    function renderServers() {
+      const grid = document.getElementById('serversGrid');
+      grid.innerHTML = servers.map((server, i) => `
+        <div class="server-card ${server.healthy ? '' : 'unhealthy'}" id="server-${i}">
+          <div class="server-status"></div>
+          <div class="server-icon">🖥️</div>
+          <div class="server-name">${server.name}</div>
+          <div class="server-requests">${server.requests}</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">requests</div>
+          <button class="server-toggle" onclick="toggleServer(${i})">
+            ${server.healthy ? 'Kill' : 'Restart'}
+          </button>
+        </div>
+      `).join('');
+      
+      document.getElementById('healthyServers').textContent = servers.filter(s => s.healthy).length;
+    }
+    
+    function sendRequest() {
+      const healthyServers = servers.map((s, i) => ({ ...s, index: i })).filter(s => s.healthy);
+      
+      if (healthyServers.length === 0) {
+        addLog('❌ No healthy servers available!', null);
+        return;
+      }
+      
+      // Round robin among healthy servers
+      currentServerIndex = (currentServerIndex + 1) % healthyServers.length;
+      const targetServer = healthyServers[currentServerIndex];
+      
+      totalRequests++;
+      servers[targetServer.index].requests++;
+      
+      document.getElementById('totalRequests').textContent = totalRequests;
+      
+      // Highlight server
+      const serverCard = document.getElementById(`server-${targetServer.index}`);
+      serverCard.classList.add('active');
+      setTimeout(() => serverCard.classList.remove('active'), 500);
+      
+      addLog(`Request #${totalRequests} → ${targetServer.name}`, targetServer.name);
+      renderServers();
+    }
+    
+    function toggleServer(index) {
+      servers[index].healthy = !servers[index].healthy;
+      if (!servers[index].healthy) {
+        addLog(`🔴 ${servers[index].name} marked unhealthy`, null);
+      } else {
+        addLog(`🟢 ${servers[index].name} restarted`, null);
+      }
+      renderServers();
+    }
+    
+    function toggleAuto() {
+      autoMode = !autoMode;
+      document.getElementById('autoToggle').classList.toggle('active', autoMode);
+      
+      if (autoMode) {
+        autoInterval = setInterval(sendRequest, 800);
+      } else {
+        clearInterval(autoInterval);
+      }
+    }
+    
+    function addLog(message, serverName) {
+      const logs = document.getElementById('logs');
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `<span class="time">[${time}]</span> ${message}`;
+      logs.insertBefore(entry, logs.firstChild);
+      
+      // Keep only last 20 logs
+      while (logs.children.length > 20) {
+        logs.removeChild(logs.lastChild);
+      }
+    }
+    
+    // Initial render
+    renderServers();
+    addLog('Load Balancer ready', null);
+  </script>
+</body>
+</html>

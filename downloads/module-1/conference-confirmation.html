@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #667eea;
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .greeting {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .sections-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+    .sections-box h3 {
+      color: #667eea;
+      margin: 0 0 15px 0;
+      font-size: 16px;
+    }
+    .section-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .section-item:last-child {
+      border-bottom: none;
+    }
+    .section-item::before {
+      content: "✓";
+      color: #34a853;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎓 Conference 2026</h1>
+      <span class="badge">Registration Confirmed</span>
+    </div>
+    
+    <p class="greeting">
+      Dear <strong><?= title ?> <?= fullName ?></strong>,
+    </p>
+    
+    <p>Thank you for registering for our conference! Your registration has been successfully processed.</p>
+    
+    <div class="sections-box">
+      <h3>📋 Your Registered Sections:</h3>
+      <? for (var i = 0; i < sections.length; i++) { ?>
+        <div class="section-item"><?= sections[i] ?></div>
+      <? } ?>
+    </div>
+    
+    <div class="info-box">
+      <strong>📅 Important:</strong> Please arrive 15 minutes before your first session. Don't forget to bring your ID for registration.
+    </div>
+    
+    <p>We look forward to seeing you at the conference!</p>
+    
+    <p>Best regards,<br>
+    <strong>Conference Organizing Committee</strong></p>
+    
+    <div class="footer">
+      <p>Cloud Technologies Conference 2026<br>
+      For questions, contact: conference@example.com</p>
+    </div>
+  </div>
+</body>
+</html>
